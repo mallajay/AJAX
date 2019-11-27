@@ -1,5 +1,7 @@
 # Simple-AJAX-CRUD-Using-JavaScript
-
+##### Note: Clone and Run 
+    1. AJAX Example Using XHR and 
+    2. AJAX Example Using fetch
 # 1. Install
     1. install node and npm
     2. to create JSON Server `Install npm i json-server -g`
