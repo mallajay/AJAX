@@ -1,0 +1,34 @@
+{
+  "posts": [
+    {
+      "title": "Mr",
+      "name": "Ajay Mall",
+      "id": 1
+    },
+    {
+      "title": "Mr",
+      "name": "Kiran",
+      "id": 2
+    },
+    {
+      "title": "Mrs",
+      "name": "Saima",
+      "id": 3
+    },
+    {
+      "title": "Mr",
+      "name": "Karma",
+      "id": 4
+    }
+  ],
+  "comments": [
+    {
+      "id": 1,
+      "body": "Content",
+      "postId": 1
+    }
+  ],
+  "profile": {
+    "name": "typicode"
+  }
+}

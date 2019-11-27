@@ -1,0 +1,146 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Document</title>
+  </head>
+  <body>
+    <h1>Post Data</h1>
+    Title:
+    <input type="text" name="title" placeholder="Mr. or Mrs" /><br />
+    Name: <input type="text" name="name" placeholder="Add Name" />
+    <button class="adder">Add</button>
+
+    <hr />
+
+    <button class="lister">List</button>
+    <div class="message"></div>
+
+    <script>
+      /***************************************************************************
+       *
+       * GET DATA
+       *
+       ***************************************************************************/
+
+      const lister = document.querySelector(".lister");
+      const message = document.querySelector(".message");
+      lister.addEventListener("click", getter);
+
+      function getter() {
+        fetch("http://localhost:5500/posts")
+          .then(function(rep) {
+            return rep.json();
+          })
+          .then(function(data) {
+            output(data);
+          });
+      }
+
+      function output(data) {
+        message.innerHTML = "";
+        data.forEach(function(el, index) {
+          console.log(el);
+          let div = document.createElement("div");
+          div.innerHTML = `
+          ${el.id} <input type="text" value="${el.title}">
+          `;
+          div.innerHTML += `
+          <input type="text" value="${el.name}">
+          <button class="update">Update</button>
+          <button class="delete">Delete</button>
+          `;
+
+          div.addEventListener("click", function() {
+            let temps = div.querySelectorAll("input");
+            let updater = div.querySelector(".update");
+            let deleter = div.querySelector(".delete");
+
+            //UPDATE Data
+            updater.addEventListener("click", function() {
+              updateData(el.id, temps[0].value, temps[1].value);
+            });
+
+            //DELETE Data
+            deleter.addEventListener("click", function() {
+              deleteData(el.id, el.name);
+            });
+          });
+          message.appendChild(div);
+        });
+      }
+
+      /***************************************************************************
+       *
+       * POST DATA
+       *
+       ***************************************************************************/
+      //Post Data
+      const btn = document.querySelector(".adder");
+      const title = document.querySelector("input[name = title]");
+      const n = document.querySelector("input[name=name]");
+      btn.addEventListener("click", adder);
+
+      //POST Data Function
+      function adder() {
+        fetch("http://localhost:5500/posts", {
+          method: "POST",
+          body: JSON.stringify({
+            title: title.value,
+            name: n.value
+          }),
+          headers: {
+            "Content-Type": "application/json"
+          }
+        })
+          .then(function(res) {
+            return res.text();
+          })
+          .then(data => {
+            console.log(data);
+          });
+      }
+
+      /***************************************************************************
+       *
+       * UPDATE DATA
+       *
+       ***************************************************************************/
+      function updateData(id, title, name) {
+        console.log("UPDATE Button Clicked");
+        console.log(id, title, name);
+        fetch("http://localhost:5500/posts/" + id, {
+          method: "put",
+          body: JSON.stringify({
+            title: title,
+            name: name
+          }),
+          headers: {
+            "Content-Type": "application/json"
+          }
+        })
+          .then(function(res) {
+            return res.text();
+          })
+          .then(function(data) {
+            console.log(data);
+          });
+      }
+
+      /***************************************************************************
+       *
+       * DELETE DATA
+       *
+       ***************************************************************************/
+      function deleteData(id, name) {
+        return fetch("http://localhost:5500/posts/" + "/" + id, {
+          method: "delete"
+        }).then(response =>
+          response.json().then(json => {
+            console.log(`${name} with ${id} is Deleted`);
+            return json;
+          })
+        );
+      }
+    </script>
+  </body>
+</html>
