@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>AJAX Example Using XHR</title>
+  </head>
+
+  <body>
+    <h3>AJAX Example Using XHR</h3>
+    <div class="output1"></div>
+    <div class="output2"></div>
+    <script>
+      const output1 = document.querySelector(".output1");
+      const output2 = document.querySelector(".output2");
+
+      var xhr = new XMLHttpRequest();
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+          let temp = JSON.parse(xhr.responseText);
+          console.log(temp);
+
+          for (let x = 0; x < temp.results.length; x++) {
+            console.log(temp.results[x]);
+            let person = temp.results[x];
+            output1.innerHTML += `${person.name.first} ${person.name.last}
+            <img src="${person.picture.thumbnail}"> <br>`;
+          }
+        }
+
+        //XHR onLoad Method
+        xhr.onload = function() {
+          console.log("done");
+        };
+
+        //XHR onProgress Method
+        xhr.onprogress = function() {
+          console.log("loading");
+        };
+      };
+      xhr.open("get", "https://randomuser.me/api/?results=10");
+      xhr.send();
+    </script>
+  </body>
+</html>

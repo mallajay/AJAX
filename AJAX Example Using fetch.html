@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>AJAX Example Using fetch</title>
+  </head>
+
+  <body>
+    <h3>AJAX Example Using fetch</h3>
+    <div class="output1"></div>
+    <div class="output2"></div>
+    <script>
+      const output1 = document.querySelector(".output1");
+      const output2 = document.querySelector(".output2");
+
+      const url = "https://randomuser.me/api/?results=10";
+      fetchData();
+
+      function fetchData() {
+        fetch(url)
+          .then(res => {
+            return res.json();
+          })
+          .then(data => {
+            console.log(data.results);
+            let people = data.results.map(function(el) {
+              console.log(el);
+              return el.name.first + " " + el.name.last;
+              // return el;
+            });
+            console.log("People", people);
+
+            people.forEach(person => {
+              console.log(person);
+              output1.innerHTML += `${person}<br>`;
+            });
+          });
+      }
+    </script>
+  </body>
+</html>
