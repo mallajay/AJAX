@@ -299,7 +299,7 @@ export class HomePage implements OnInit {
           //XHR Open Method*
           xhr.open(
             'GET',
-            'https://us-central1-function-login-94e8c.cloudfunctions.net/authData/products',
+            'URL',
             true
           );
           xhr.setRequestHeader('Authorization', 'Bearer ' + token);
