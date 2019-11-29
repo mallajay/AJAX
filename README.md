@@ -225,3 +225,97 @@ export class HomePage implements OnInit {
   }
 }
 ```
+
+# 7. XMLHttpRequest with ID token in Authorization header
+
+```
+
+import { WidgetUtilService } from './../providers/widget-util.service';
+import { Component, OnInit } from '@angular/core';
+import { AngularFireAuth } from '@angular/fire/auth';
+
+@Component({
+  selector: 'app-home',
+  templateUrl: 'home.page.html',
+  styleUrls: ['home.page.scss'],
+})
+export class HomePage implements OnInit {
+  productList: Array<any> = [];
+  productListAvailable: boolean = false;
+
+  constructor(
+    private widgetUtilService: WidgetUtilService,
+    private angularFireAuth: AngularFireAuth
+  ) {
+    this.onAuthStateChanged();
+  }
+
+  ngOnInit() {}
+
+
+  onAuthStateChanged() {
+    this.angularFireAuth.auth.onAuthStateChanged((user) => {
+      if (user) {
+        this.authenticatedProductDataByUsingFETCHRequest();
+        this.authenticatedProductDataByUsingXMLHttpRequest();
+      }
+    });
+  }
+
+  
+   // GET product List With Auth Check by Using XMLHttpRequest
+ 
+
+  authenticatedProductDataByUsingXMLHttpRequest() {
+    try {
+      this.productListAvailable = false;
+      let result = this.angularFireAuth.auth.currentUser.getIdToken().then(
+        function(token) {
+          console.log('Sending request with ID token in Authorization header.');
+
+          var xhr = new XMLHttpRequest();
+
+          xhr.onreadystatechange = function() {
+            // console.log('XHR', xhr);
+
+            if (xhr.readyState === 4 && xhr.status === 200) {
+              // console.log(xhr.responseText);
+              let temp = JSON.parse(xhr.responseText);
+              console.log('XMLHttpRequest: Product Data', temp);
+              let productList = temp;
+            }
+
+            //XHR onLoad Method*
+            xhr.onload = function() {
+              console.log('done');
+            };
+
+            //XHR onprogress Method*
+            xhr.onprogress = function() {
+              console.log('loading');
+            };
+          };
+
+          //XHR Open Method*
+          xhr.open(
+            'GET',
+            'https://us-central1-function-login-94e8c.cloudfunctions.net/authData/products',
+            true
+          );
+          xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+          xhr.send();
+
+          this.productListAvailable = true;
+        }.bind(this)
+      );
+    } catch (error) {
+      console.log(error);
+      this.widgetUtilService.showToast(error.message, 'ERROR');
+      this.productListAvailable = true;
+    }
+  }
+
+ 
+}
+
+```
