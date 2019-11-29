@@ -148,25 +148,6 @@ export class ListPage implements OnInit {
   }
 }
 ```
-### In .html File
-```
-<ion-content>
-  <ion-grid>
-    <ion-row *ngFor="let pro of productList">
-      <ion-col>
-        <h6>
-          {{pro.name.first}} {{pro.name.last}}
-          <ion-img
-            style="height: 50px; width: 50px;"
-            src="{{ pro.picture.thumbnail }}"
-          ></ion-img>
-        </h6>
-        <br />
-      </ion-col>
-    </ion-row>
-  </ion-grid>
-</ion-content>
-```
 
 # 6. Fetch Request with ID token in Authorization header
 
