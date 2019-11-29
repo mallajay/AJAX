@@ -103,6 +103,7 @@
 # 5. AJAX In TypeScript 
 ```
 import { Component, OnInit } from "@angular/core";
+import { WidgetUtilService } from './../providers/widget-util.service';
 
 @Component({
   selector: "app-list",
@@ -112,7 +113,7 @@ import { Component, OnInit } from "@angular/core";
 export class ListPage implements OnInit {
 
   productList: Array<any> = [];
-  url = "https://randomuser.me/api/?results=10";
+  productListAvailable: boolean = false;
 
   constructor() {
     this.fetchData();
@@ -120,22 +121,31 @@ export class ListPage implements OnInit {
 
   ngOnInit() {}
 
-  fetchData() {
-    let result = fetch(this.url)
-      .then(res => {
-        return res.json();
-      })
-      .then(data => {
-        console.log(data.results);
-        let people = data.results.map(function(el) {
-          // console.log("El", el);
-          return el;
+   getProductList() {
+    try {
+      this.productListAvailable = false;
+      let result = fetch(
+        'URL'
+      )
+        .then((res) => {
+          return res.json();
+        })
+        .then((data) => {
+          // console.log(' Product data ', data);
+          let product = data.map((el) => {
+            return el;
+          });
+          //Very Imp In TypeScript for front End
+          this.productList = product;
+          console.log('product', product);
+          this.productListAvailable = true;
         });
-        //Very Imp In TypeScript for front End
-        this.productList = people;
-        console.log("People", people);
-      });
+    } catch (error) {
+      console.log(error);
+      this.widgetUtilService.showToast(error.message, 'ERROR');
+      this.productListAvailable = true;
     }
+  }
 }
 ```
 ### In .html File
@@ -157,3 +167,169 @@ export class ListPage implements OnInit {
   </ion-grid>
 </ion-content>
 ```
+
+# 6. Fetch Request with ID token in Authorization header
+
+```
+import { WidgetUtilService } from './../providers/widget-util.service';
+import { Component, OnInit } from '@angular/core';
+import { AngularFireAuth } from '@angular/fire/auth';
+
+@Component({
+  selector: 'app-home',
+  templateUrl: 'home.page.html',
+  styleUrls: ['home.page.scss'],
+})
+export class HomePage implements OnInit {
+  productList: Array<any> = [];
+  productListAvailable: boolean = false;
+
+  constructor(
+    private widgetUtilService: WidgetUtilService,
+    private angularFireAuth: AngularFireAuth
+  ) {
+    this.onAuthStateChanged();
+  }
+
+  ngOnInit() {}
+
+  onAuthStateChanged() {
+    this.angularFireAuth.auth.onAuthStateChanged((user) => {
+      if (user) {
+        this.authenticatedProductDataByUsingFETCHRequest();
+      }
+    });
+  }
+
+  /**
+   * By Using Fetch Method Auth data
+   *
+   **/
+   
+  authenticatedProductDataByUsingFETCHRequest() {
+    try {
+      this.productListAvailable = false;
+      let result = this.angularFireAuth.auth.currentUser.getIdToken().then(
+        function(token) {
+          console.log('Sending request with ID token in Authorization header.');
+          fetch(
+            'URL',
+            {
+              method: 'GET',
+              headers: new Headers({
+                Authorization: 'Bearer ' + token,
+              }),
+            }
+          )
+            .then((res) => {
+              return res.json();
+            })
+            .then((data) => {
+              // console.log(' Product data ', data);
+              let product = data.map((el) => {
+                return el;
+              });
+              //Very Imp In TypeScript for front End
+              this.productList = product;
+              console.log('Data product', product);
+              this.productListAvailable = true;
+            });
+        }.bind(this)
+      );
+    } catch (error) {
+      console.log(error);
+      this.widgetUtilService.showToast(error.message, 'ERROR');
+      this.productListAvailable = true;
+    }
+  }
+}
+
+```
+
+
+# 7. Fetch Request with ID token in Authorization header
+
+import { WidgetUtilService } from './../providers/widget-util.service';
+import { Component, OnInit } from '@angular/core';
+import { AngularFireAuth } from '@angular/fire/auth';
+
+@Component({
+  selector: 'app-home',
+  templateUrl: 'home.page.html',
+  styleUrls: ['home.page.scss'],
+})
+export class HomePage implements OnInit {
+  productList: Array<any> = [];
+  productListAvailable: boolean = false;
+
+  constructor(
+    private widgetUtilService: WidgetUtilService,
+    private angularFireAuth: AngularFireAuth
+  ) {
+    this.onAuthStateChanged();
+  }
+
+  ngOnInit() {}
+
+  onAuthStateChanged() {
+    this.angularFireAuth.auth.onAuthStateChanged((user) => {
+      if (user) {
+        this.authenticatedProductDataByUsingXMLHttpRequest();
+      }
+    });
+  }
+
+  authenticatedProductDataByUsingXMLHttpRequest() {
+    try {
+      this.productListAvailable = false;
+      let result = this.angularFireAuth.auth.currentUser.getIdToken().then(
+        function(token) {
+          console.log('Sending request with ID token in Authorization header.');
+
+          var xhr = new XMLHttpRequest();
+
+          xhr.onreadystatechange = function() {
+            // console.log('XHR', xhr);
+
+            if (xhr.readyState === 4 && xhr.status === 200) {
+              // console.log(xhr.responseText);
+              let temp = JSON.parse(xhr.responseText);
+              console.log(
+                'Authrized Products on Home Page by using XMLHttpRequest()',
+                temp
+              );
+              let productList = temp;
+            }
+
+            //XHR onLoad Method*
+            xhr.onload = function() {
+              console.log('done');
+            };
+
+            //XHR onprogress Method*
+            xhr.onprogress = function() {
+              console.log('loading');
+            };
+          };
+
+          //XHR Open Method*
+          xhr.open(
+            'GET',
+            'URL',
+            true
+          );
+          xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+          xhr.send();
+
+          this.productListAvailable = true;
+        }.bind(this)
+      );
+    } catch (error) {
+      console.log(error);
+      this.widgetUtilService.showToast(error.message, 'ERROR');
+      this.productListAvailable = true;
+    }
+  }
+}
+
+
