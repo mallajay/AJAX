@@ -1,4 +1,4 @@
-# Simple-AJAX-CRUD-Using-JavaScript
+# AJAX-CRUD-Using-JavaScript-and-TypeScript
 ##### Note: Clone and Run 
     1. AJAX Example Using XHR and 
     2. AJAX Example Using fetch
